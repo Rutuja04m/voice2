@@ -18,16 +18,16 @@ export default function App() {
   const [question, setQuestion] = React.useState("");
 
   const { start, stop } = useSpeechRecognition(
-    (transcript) => {
-      setQuestion(transcript);
-      setIsListening(false);
-      handleAsk(transcript);
-    },
-    (error) => {
-      toast.error(`Speech recognition error: ${error}`);
-      setIsListening(false);
-    }
-  );
+          (transcript) => {
+       setQuestion(transcript);
+       setIsListening(false);
+       handleAsk(transcript);
+     },
+        (error) => {
+       toast.error(`Speech recognition error: ${error}`);
+       setIsListening(false);
+     }
+     );
 
   async function handleAsk(q = question) {
     if (!q.trim()) return;
