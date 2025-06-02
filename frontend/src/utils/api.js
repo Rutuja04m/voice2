@@ -1,45 +1,35 @@
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+// src/utils/api.js
 
-/**
- * Ask a question to the Gemini backend (via FastAPI).
- * Sends `question` as FormData (not JSON).
- */
-export async function askGemini(question) {
-  const formData = new FormData();
-  formData.append("question", question);
+const BASE_URL = "http://localhost:8000"; // Make sure FastAPI is running on this
 
-  const response = await fetch(`${BACKEND_URL}/ask-gemini/`, {
-    method: "POST",
-    body: formData,
-  });
-
-  const data = await response.json();
-
-  if (!response.ok || !data.success) {
-    throw new Error(data.error || "Gemini request failed");
-  }
-
-  return { answer: data.response };
-}
-
-/**
- * Upload a document to the backend.
- * Sends the file as FormData to `/upload-doc/`.
- */
-export async function uploadDocument(file) {
+export async function uploadAndAnalyze(file) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await fetch(`${BACKEND_URL}/upload-doc/`, {
+  const response = await fetch(`${BASE_URL}/upload-analyze/`, {
     method: "POST",
     body: formData,
   });
 
-  const data = await response.json();
-
-  if (!response.ok || !data.success) {
-    throw new Error(data.error || "Upload failed");
+  if (!response.ok) {
+    throw new Error("File upload failed.");
   }
 
-  return data;
+  return response.json();
+}
+
+export async function askGemini(question) {
+  const response = await fetch(`${BASE_URL}/ask`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ question }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to get response from Gemini.");
+  }
+
+  return response.json();
 }
